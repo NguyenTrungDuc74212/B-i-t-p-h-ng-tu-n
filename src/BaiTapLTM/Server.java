@@ -38,7 +38,7 @@ public class Server {
             Socket socket = server.accept();
             System.out.println("Đã kết nối với"+socket);
             Server.ListSK.add(socket);
-            ReadClient read = new ReadClient(socket);
+            ReadServer read = new ReadServer(socket);
             read.start();
             
         }
@@ -67,8 +67,11 @@ public class Server {
                         String sms = dis.readUTF();
                        for(Socket item: Server.ListSK)
                        {
-                           DataOutputStream dos = new DataOutputStream(item.getOutputStream());
+                           if(item.getPort() != server.getPort()){
+                            DataOutputStream dos = new DataOutputStream(item.getOutputStream());
                            dos.writeUTF(sms);
+                           }
+                         
                        
                        
                        }
