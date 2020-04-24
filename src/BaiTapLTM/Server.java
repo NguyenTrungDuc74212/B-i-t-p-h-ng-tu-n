@@ -8,12 +8,14 @@ package BaiTapLTM;
 import java.io.DataInputStream;
 import java.io.DataOutputStream;
 import java.io.IOException;
+import java.net.InetAddress;
 import java.net.ServerSocket;
 import java.net.Socket;
 import java.util.ArrayList;
 import java.util.Scanner;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import sun.security.krb5.internal.HostAddress;
 
 /**
  *
@@ -22,11 +24,13 @@ import java.util.logging.Logger;
 public class Server {
 
     private int port;
+
     public static ArrayList<Socket> ListSK;
-    
 
     public Server(int port) {
+
         this.port = port;
+
     }
 
     private void excute() throws IOException {
@@ -35,84 +39,117 @@ public class Server {
         write.start();
         System.out.println("Server is listening...");
         while (true) {
+
             Socket socket = server.accept();
-            System.out.println("Đã kết nối với"+socket);
+            System.out.println("Đã kết nối với" + socket);
             Server.ListSK.add(socket);
             ReadServer read = new ReadServer(socket);
             read.start();
-            
+
         }
     }
-    
+
     public static void main(String[] args) throws IOException {
         Server.ListSK = new ArrayList<>();
         Server sv = new Server(15797);
         sv.excute();
+
     }
-        class ReadServer extends Thread {
 
-            private Socket server;
+    class ReadServer extends Thread {
 
-            public ReadServer(Socket server) {
-                this.server = server;
-            }
+        private Socket socket;
 
-            @Override
-            public void run() {
-                DataInputStream dis = null;
-                
-                try {
-                    dis = new DataInputStream(server.getInputStream());
-                    while (true) {
-                        String sms = dis.readUTF();
-                       for(Socket item: Server.ListSK)
-                       {
-                           if(item.getPort() != server.getPort()){
-                            DataOutputStream dos = new DataOutputStream(item.getOutputStream());
-                           dos.writeUTF(sms);
-                           }
-                         
-                       
-                       
-                       }
+        public ReadServer(Socket socket) {
+            this.socket = socket;
+        }
+
+        @Override
+        public void run() {
+            DataInputStream dis = null;
+
+            try {
+                dis = new DataInputStream(socket.getInputStream());
+                while (true) {
+                    String sms = dis.readUTF();
+                    if (sms.equalsIgnoreCase("1")) {
+                        System.out.println("one");
+
+                    } else if (sms.equalsIgnoreCase("2")) {
+                        System.out.println("tow");
+
+                    } else if (sms.equalsIgnoreCase("3")) {
+                        System.out.println("three");
+
+                    } else if (sms.equalsIgnoreCase("4")) {
+                        System.out.println("four");
+
+                    } else if (sms.equalsIgnoreCase("5")) {
+                        System.out.println("five");
+
+                    } else if (sms.equalsIgnoreCase("6")) {
+                        System.out.println("Six");
+
+                    } else if (sms.equalsIgnoreCase("7")) {
+                        System.out.println("Seven");
+
+                    } else if (sms.equalsIgnoreCase("8")) {
+                        System.out.println("eight");
+
+                    } else if (sms.equalsIgnoreCase("9")) {
+                        System.out.println("Nine");
+
+                    } else if (sms.equalsIgnoreCase("end")) {
+                        Server.ListSK.remove(socket);
+                        System.out.println("good bye " + socket);
+                        dis.close();
+                        socket.close();
+                        continue;
+                    } else {
                         System.out.println(sms);
                     }
-                } catch (Exception e) {
-                    try {
-                        dis.close();
-                        server.close();
-                    } catch (IOException ex) {
-                        System.out.println("Ngắt kết nối Server");
+                    for (Socket item : Server.ListSK) {
+                        if (item.getPort() != socket.getPort()) {
+                            DataOutputStream dos = new DataOutputStream(item.getOutputStream());
+                            dos.writeUTF(sms);
+                        }
+
                     }
 
                 }
-            }
-        }
-        class WriteServer extends Thread {
+            } catch (Exception e) {
+                try {
 
-    
-            @Override
-            public void run() {
-                DataOutputStream dos = null;
-                Scanner sc = new Scanner(System.in);
-                while (true) {
-                    String sms = sc.nextLine();
-                     try {
-                     for(Socket item: Server.ListSK)
-                       {
-                           dos = new DataOutputStream(item.getOutputStream());
-                      
-                            dos.writeUTF(sms);
-                        }    }
-                     catch (IOException ex) {
-                           
-                        }
-                       
-                       
-                       }
-                    
+                    socket.close();
+                } catch (IOException ex) {
+                    System.out.println("Ngắt kết nối Server");
                 }
-                
+
             }
         }
+    }
 
+    class WriteServer extends Thread {
+
+        @Override
+        public void run() {
+            DataOutputStream dos = null;
+            Scanner sc = new Scanner(System.in);
+            while (true) {
+                String sms = sc.nextLine();
+                try {
+                    for (Socket item : Server.ListSK) {
+                        dos = new DataOutputStream(item.getOutputStream());
+
+                        dos.writeUTF(sms);
+                    }
+                } catch (IOException ex) {
+
+                }
+
+            }
+
+        }
+
+    }
+}
