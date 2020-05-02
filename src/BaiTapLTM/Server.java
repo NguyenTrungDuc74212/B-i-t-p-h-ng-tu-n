@@ -7,14 +7,20 @@ package BaiTapLTM;
 
 import java.io.DataInputStream;
 import java.io.DataOutputStream;
+import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.FileWriter;
 import java.io.IOException;
 import java.net.InetAddress;
 import java.net.ServerSocket;
 import java.net.Socket;
+import java.nio.file.Files;
 import java.util.ArrayList;
+import java.util.Formatter;
 import java.util.Scanner;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import sun.misc.FormattedFloatingDecimal;
 import sun.security.krb5.internal.HostAddress;
 
 /**
@@ -25,6 +31,8 @@ public class Server {
 
     private int port;
 
+    private Formatter x;
+
     public static ArrayList<Socket> ListSK;
 
     public Server(int port) {
@@ -34,19 +42,27 @@ public class Server {
     }
 
     private void excute() throws IOException {
+        int i=0;
         ServerSocket server = new ServerSocket(port);
         WriteServer write = new WriteServer();
         write.start();
         System.out.println("Server is listening...");
         while (true) {
-
+     if(i>10)
+     {
+         System.out.println("503 Service Unavailable");
+         server.close();
+     }
             Socket socket = server.accept();
             System.out.println("Đã kết nối với" + socket);
             Server.ListSK.add(socket);
             ReadServer read = new ReadServer(socket);
-            read.start();
-
+            read.start(); 
+            i++;
         }
+       
+       
+   
     }
 
     public static void main(String[] args) throws IOException {
@@ -152,4 +168,5 @@ public class Server {
         }
 
     }
+
 }
