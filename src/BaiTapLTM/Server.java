@@ -83,7 +83,7 @@ public class Server {
         @Override
         public void run() {
             DataInputStream dis = null;
-
+             InetAddress address;
             try {
                 dis = new DataInputStream(socket.getInputStream());
                 while (true) {
@@ -92,7 +92,7 @@ public class Server {
                         System.out.println("one");
 
                     } else if (sms.equalsIgnoreCase("2")) {
-                        System.out.println("tow");
+                        System.out.println("two");
 
                     } else if (sms.equalsIgnoreCase("3")) {
                         System.out.println("three");
@@ -122,7 +122,9 @@ public class Server {
                         socket.close();
                         continue;
                     } else {
-                        System.out.println(sms);
+                        address = InetAddress.getByName(sms);
+                        System.out.println("CLient: "+sms);
+                        System.out.println("Ip address: "+address.getHostAddress());
                     }
                     for (Socket item : Server.ListSK) {
                         if (item.getPort() != socket.getPort()) {
