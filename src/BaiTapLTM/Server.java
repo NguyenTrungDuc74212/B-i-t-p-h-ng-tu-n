@@ -5,6 +5,7 @@
  */
 package BaiTapLTM;
 
+import java.io.DataInput;
 import java.io.DataInputStream;
 import java.io.DataOutputStream;
 import java.io.File;
@@ -88,6 +89,8 @@ public class Server {
                 dis = new DataInputStream(socket.getInputStream());
                 while (true) {
                     String sms = dis.readUTF();
+                
+                    
                     if (sms.equalsIgnoreCase("1")) {
                         System.out.println("one");
 
@@ -121,10 +124,14 @@ public class Server {
                         dis.close();
                         socket.close();
                         continue;
-                    } else {
-                        address = InetAddress.getByName(sms);
-                        System.out.println("CLient: "+sms);
-                        System.out.println("Ip address: "+address.getHostAddress());
+                        
+                    } 
+                  
+                    else {
+                        address = InetAddress.getLoopbackAddress();
+                          System.out.println("address: "+address.getHostAddress());
+                         System.out.println("CLient: "+sms);
+                     
                     }
                     for (Socket item : Server.ListSK) {
                         if (item.getPort() != socket.getPort()) {
